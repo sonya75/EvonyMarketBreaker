@@ -1,42 +1,76 @@
-from proxyscraper import *
 from threading import Thread 
-import Queue
+import subprocess
+import socket
 import socks
-def checkproxy(x):
-	if x.count(':')!=1:
-		return False
-	y=x.strip().split(':')
-	if (y[-1]!='80')&(y[-1]!='8080'):
-		return False
-	port = int(y[1])
-	ip=y[0]
-	ket=socks.socksocket()
-	ket.setproxy(socks.PROXY_TYPE_HTTP,ip,port)
-	print("DONE")
+import time
+socket.setdefaulttimeout(20)
+def checksocks5proxy(x,y):
+	s=socks.socksocket()
+	s.setproxy(socks.PROXY_TYPE_SOCKS5,x,y)
 	try:
-		ket.connect(("google.co.in",80))
-		print("CONNECTED")
-		ket.close()
-		print(r)
+		s.connect(('www.google.com',80))
+		s.close()
 		return True
 	except:
-		return False
-def addtoqueue(x):
-	global proxyqueue
-	proxyqueue.put(x)
-def mainchecker():
-	global proxyqueue
-	proxyqueue=Queue.Queue()
-	t=Thread(target=main,args=(addtoqueue,))
-	t.daemon=True
-	t.start()
-	startchecking(t)
-def startchecking(c):
-	global proxyqueue
-	while True:
 		try:
-			r=proxyqueue.get()
-			Thread(target=checkproxy,args=(r,)).start()
+			s.close()
 		except:
 			pass
-		time.sleep(1)
+		return False
+def checksocks4proy(x,y):
+	s=socks.socksocket()
+	s.setproxy(socks.PROXY_TYPE_SOCKS4,x,y)
+	try:
+		s.connect(('www.google.com',80))
+		s.close()
+		return True
+	except:
+		try:
+			s.close()
+		except:
+			pass
+		return False
+def checkhttpproxy(x,y):
+	s=socks.socksocket()
+	s.setproxy(socks.PROXY_TYPE_HTTP,x,y)
+	try:
+		s.connect(('www.google.com',80))
+		s.close()
+		return True
+	except:
+		try:
+			s.close()
+		except:
+			pass
+		return False
+def checkproxy(x,callback):
+	x=str(x)
+	if x.count(':')!=1:
+		try:
+			callback("FATALERROR101"+x)
+		except:
+			pass
+		return
+	try:
+		y=x.strip().split(':')
+		port = int(y[1])
+		ip=y[0]
+	except:
+		try:
+			callback("FATALERROR101"+x)
+		except:
+			pass
+		return
+	try:
+		if checkhttpproxy(ip,port):
+			callback("SUCCESS124"+x+"PROXYTYPE HTTP")
+		elif checksocks5proxy(ip,port):
+			callback("SUCCESS124"+x+"PROXYTYPE SOCKS5")
+		elif checksocks4proy(ip,port):
+			callback("SUCCESS124"+x+"PROXYTYPE SOCKS4")
+		else:
+			raise
+		return True
+	except:
+		callback("FAILED259"+x)
+		return False
