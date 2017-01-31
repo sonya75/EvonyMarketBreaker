@@ -31,4 +31,4 @@ Max number of connections per proxy:- 3
 Timeout:- 20
 ```
 
-*** To run this app its very important to have a lot of working proxies. So you should a lot of proxies in the proxy manager before starting the app. You can easily scraper over 20-30k proxies from gatherproxy.com and using the tool I mentioned.
+** To run this app its very important to have a lot of working proxies. So you should a lot of proxies in the proxy manager before starting the app. You can easily scraper over 20-30k proxies from gatherproxy.com and using the tool I mentioned. **
