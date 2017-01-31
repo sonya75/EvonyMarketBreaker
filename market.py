@@ -72,7 +72,8 @@ def createacc(server,prioritylist,useclient=None,proxy=None,proxytype='HTTP',cal
 		v=items.useitem('player.box.gambling.3')
 		if v['data']['itemBeans'][0]['id'] in itemsarray:
 			result.append(v['data']['itemBeans'][0])
-		for g in prioritylist:
+		pr=[prioritylist[i] for i in range(0,len(prioritylist)) if prioritylist[i] not in prioritylist[:i]]
+		for g in pr:
 			i=0
 			while i<(len(result)):
 				if result[i]['id']==('player.box.gambling.'+g):
